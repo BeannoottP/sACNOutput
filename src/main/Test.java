@@ -10,13 +10,12 @@ import java.util.concurrent.TimeUnit;
 public class Test {
 
 	public static void main(String[] args) throws Exception {
-		while(true) {
+
 		InetAddress multicastAddress = InetAddress.getByName("239.255.0.1");
 		int port = 5568;
-		byte[] packet = createSACNPacket(1, new byte[] { (byte)255, (byte)128, (byte)64 }); // RGB data
 
 		DatagramSocket socket = new DatagramSocket();
-		
+
 		Manager m = new Manager();
 		byte[] data = new byte[512];
 		new Random().nextBytes(data);
@@ -26,6 +25,11 @@ public class Test {
 		DatagramPacket univSender = new DatagramPacket(q.fullPacket, q.fullPacket.length, multicastAddress, port);
 		System.out.println("sending");
 		while (true) {
+			new Random().nextBytes(data);
+			dmx = new Packet(m, 1, 1, data);
+			q = new Packet(m, 3, 1, data);
+			dmxSender = new DatagramPacket(dmx.fullPacket, dmx.fullPacket.length, multicastAddress, port);
+			univSender = new DatagramPacket(q.fullPacket, q.fullPacket.length, multicastAddress, port);
 			TimeUnit.MILLISECONDS.sleep(300);
 			dmx = new Packet(m, 1, 1, data);
 			q = new Packet(m, 3, 1, data);
@@ -54,10 +58,7 @@ public class Test {
 		}
 		//socket.close();
 		//System.out.println("sACN packet sent.");
-		}
+
 	}
 
-	private static byte[] createSACNPacket(int universe, byte[] dmxData) {
-		return null;
-	}
 }

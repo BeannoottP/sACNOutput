@@ -37,7 +37,7 @@ public class Packet {
 		//todo final packet adjustments see below
 		createFullPacket();
 		
-		//TODO dynamic size adjustment??
+		
 	}
 
 	private void createRootLayer() {
@@ -80,9 +80,8 @@ public class Packet {
 				framingLayer[2] = 0x00; framingLayer[3] = 0x00; framingLayer[4] = 0x00; framingLayer[5] = 0x02; // DATA_PACKET vector
 				System.arraycopy(stringToByte("sACNaroni Java"), 0, framingLayer, 6, 64);
 				framingLayer[70] = 0x64; //prio, defaulted to 100 TODO dynamic prio
-				framingLayer[71] = 0x00; framingLayer[72] = 0x00; //TODO syncing address, this discards any syncing ideas
-				framingLayer[73] = (byte) manager.universeList.get(universe)[0]; //sequence num
-				manager.universeList.get(universe)[0]++;
+				framingLayer[71] = 0x7F; framingLayer[72] = 0x7F; //max possible sync address
+				framingLayer[73] = manager.seq(); //sequence num
 				framingLayer[74] = 0x00; //TODO options
 				
 				//universe
@@ -90,11 +89,13 @@ public class Packet {
 				framingLayer[76] = (byte) (universe & 0xFF);
 				break;
 				
-			case PACKET_TYPE_SYNC: //TODO
+			case PACKET_TYPE_SYNC:
 				framingLayer = new byte[11];
 				framingLayer[0] = 0x70; framingLayer[1] = 0x0b; //flags + fixed length 49 - 38 = 11
 				framingLayer[2] = 0x00; framingLayer[3] = 0x00; framingLayer[4] = 0x00; framingLayer[5] = 0x01; // EXTENDED_SYNCHRONIZATION vector
-				break; //TODO will finish later
+				framingLayer[6] = manager.seq();
+				framingLayer[7] = 0x7F; framingLayer[8] = 0x7F; //max address TODO dynamic syncing
+				break;
 				
 			case PACKET_TYPE_UNIVERSE: 
 				framingLayer = new byte[74];
